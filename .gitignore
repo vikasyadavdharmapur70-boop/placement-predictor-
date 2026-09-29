@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Flask
+*.log
+instance/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Note: model.pkl ko commit karna hai (server par wahi model load hota hai),
+# isliye use ignore nahi kiya.

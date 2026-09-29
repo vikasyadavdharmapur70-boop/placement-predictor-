@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Placement Predictor - Preview</title>
+  <link rel="stylesheet" href="static/style.css" />
+</head>
+<body>
+
+  <!-- Ye sirf preview hai. Real website ke liye: python app.py -->
+
+  <div class="container">
+
+    <header>
+      <h1>🎯 Placement Predictor</h1>
+      <p>Apni details bharo aur jano ki placement hogi ya nahi!</p>
+    </header>
+
+    <form id="predictForm">
+
+      <label>10th Percentage (%)</label>
+      <input type="number" id="tenth_percent" placeholder="e.g. 85" required />
+
+      <label>12th Percentage (%)</label>
+      <input type="number" id="twelfth_percent" placeholder="e.g. 80" required />
+
+      <label>CGPA (0 - 10)</label>
+      <input type="number" id="cgpa" placeholder="e.g. 7.5" required />
+
+      <label>Internships ki sankhya</label>
+      <input type="number" id="internships" placeholder="e.g. 1" required />
+
+      <label>Projects ki sankhya</label>
+      <input type="number" id="projects" placeholder="e.g. 3" required />
+
+      <label>Aptitude Score (0 - 100)</label>
+      <input type="number" id="aptitude_score" placeholder="e.g. 70" required />
+
+      <label>Communication Score (0 - 100)</label>
+      <input type="number" id="communication_score" placeholder="e.g. 75" required />
+
+      <label>Work Experience?</label>
+      <select id="work_experience">
+        <option value="0">No</option>
+        <option value="1">Yes</option>
+      </select>
+
+      <button type="submit" id="submitBtn">Predict Karo 🔮</button>
+    </form>
+
+    <div id="result" class="hidden">
+      <h2 id="predictionText"></h2>
+      <div id="probText"></div>
+      <p id="messageText"></p>
+    </div>
+
+  </div>
+
+  <script>
+    // Demo mode: server ke bina sample result dikhata hai
+    document.getElementById("predictForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      // Random sample result (real website me ML model se aata hai)
+      const percent = Math.floor(Math.random() * 45) + 50; // 50 se 95%
+      const placed = percent >= 50;
+
+      document.getElementById("predictionText").textContent =
+        placed ? "Placed 🎉" : "Not Placed 😕";
+      document.getElementById("probText").textContent = percent + "% chance";
+      document.getElementById("messageText").textContent = placed
+        ? "Great! Aapka profile placement ke liye strong hai."
+        : "Abhi chances kam hain — skills improve karo, ho jayega!";
+
+      const box = document.getElementById("result");
+      box.className = placed ? "placed" : "not-placed";
+    });
+  </script>
+</body>
+</html>

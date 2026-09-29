@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Placement Predictor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Header -->
+    <header>
+      <h1>🎯 Placement Predictor</h1>
+      <p>Apni details bharo aur jano ki placement hogi ya nahi!</p>
+    </header>
+
+    <!-- Form -->
+    <form id="predictForm">
+
+      <label>10th Percentage (%)</label>
+      <input type="number" id="tenth_percent" min="0" max="100" step="0.1" placeholder="e.g. 85" required />
+
+      <label>12th Percentage (%)</label>
+      <input type="number" id="twelfth_percent" min="0" max="100" step="0.1" placeholder="e.g. 80" required />
+
+      <label>CGPA (0 - 10)</label>
+      <input type="number" id="cgpa" min="0" max="10" step="0.01" placeholder="e.g. 7.5" required />
+
+      <label>Internships ki sankhya</label>
+      <input type="number" id="internships" min="0" max="10" step="1" placeholder="e.g. 1" required />
+
+      <label>Projects ki sankhya</label>
+      <input type="number" id="projects" min="0" max="20" step="1" placeholder="e.g. 3" required />
+
+      <label>Aptitude Score (0 - 100)</label>
+      <input type="number" id="aptitude_score" min="0" max="100" step="1" placeholder="e.g. 70" required />
+
+      <label>Communication Score (0 - 100)</label>
+      <input type="number" id="communication_score" min="0" max="100" step="1" placeholder="e.g. 75" required />
+
+      <label>Work Experience?</label>
+      <select id="work_experience">
+        <option value="0">No</option>
+        <option value="1">Yes</option>
+      </select>
+
+      <button type="submit" id="submitBtn">Predict Karo 🔮</button>
+    </form>
+
+    <!-- Result yahan dikhega -->
+    <div id="result" class="hidden">
+      <h2 id="predictionText"></h2>
+      <div id="probText"></div>
+      <p id="messageText"></p>
+    </div>
+
+    <!-- Error message -->
+    <div id="error" class="hidden"></div>
+
+  </div>
+
+  <!-- Credit (corner me chhota sa) -->
+  <footer class="credit">Created by Vikas Yadav</footer>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

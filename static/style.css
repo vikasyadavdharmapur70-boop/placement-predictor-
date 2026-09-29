@@ -1,0 +1,147 @@
+/* Placement Predictor - simple clean design */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  min-height: 100vh;
+  padding: 30px 15px;
+}
+
+.container {
+  max-width: 450px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Header */
+header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+header h1 {
+  color: #333;
+  font-size: 26px;
+  margin-bottom: 8px;
+}
+
+header p {
+  color: #777;
+  font-size: 14px;
+}
+
+/* Form */
+label {
+  display: block;
+  font-size: 13px;
+  color: #555;
+  font-weight: bold;
+  margin: 12px 0 5px;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 14px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* Result box */
+#result {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  color: white;
+}
+
+#result.placed {
+  background: linear-gradient(135deg, #11998e, #38ef7d);
+}
+
+#result.not-placed {
+  background: linear-gradient(135deg, #eb3349, #f45c43);
+}
+
+#result h2 {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
+#probText {
+  font-size: 30px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+#messageText {
+  font-size: 13px;
+  opacity: 0.95;
+}
+
+/* Error box */
+#error {
+  margin-top: 15px;
+  padding: 12px;
+  background: #fdecea;
+  color: #c0392b;
+  border-radius: 8px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Credit - corner me naam */
+.credit {
+  position: fixed;
+  bottom: 12px;
+  right: 15px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(0, 0, 0, 0.25);
+  padding: 5px 12px;
+  border-radius: 20px;
+  pointer-events: none;
+}
