@@ -6,10 +6,11 @@ Phir browser me kholo:  http://127.0.0.1:5000
 """
 
 import os
+from functools import wraps
 
 import joblib
 import numpy as np
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, redirect, render_template, request, session, url_for
 
 # Pehle check karo ki model train hua hai ya nahi
 if not os.path.exists("model.pkl"):
@@ -18,7 +19,43 @@ if not os.path.exists("model.pkl"):
     exit()
 
 app = Flask(__name__)
+app.secret_key = "placement-predictor-secret-key"  # session ke liye zaroori
 model = joblib.load("model.pkl")
+
+# Login credentials — yahan apna username/password badal sakte ho
+VALID_USERNAME = "vikas yadav"
+VALID_PASSWORD = "pit jaunpur"
+
+
+def login_required(f):
+    # Bina login kiye koi bhi page kholo to /login par bhej do
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if not session.get("logged_in"):
+            return redirect(url_for("login"))
+        return f(*args, **kwargs)
+
+    return wrapper
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    error = ""
+    if request.method == "POST":
+        username = request.form.get("username", "")
+        password = request.form.get("password", "")
+        if username == VALID_USERNAME and password == VALID_PASSWORD:
+            session["logged_in"] = True
+            return redirect(url_for("home"))
+        error = "Galat username ya password! Dobara try karo."
+    return render_template("login.html", error=error)
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
+
 
 # Form se aane wale fields (same order me model ko bhejte hain)
 FEATURES = [
@@ -28,12 +65,14 @@ FEATURES = [
 
 
 @app.route("/")
+@login_required
 def home():
     # Website ka main page dikhao
     return render_template("index.html")
 
 
 @app.route("/predict", methods=["POST"])
+@login_required
 def predict():
     # JavaScript se student ka data aata hai (JSON format me)
     data = request.get_json()

@@ -1,147 +1,868 @@
-/* Placement Predictor - simple clean design */
+/* ============================================================
+   Placement Predictor — TAGDA DESIGN ⚡
+   Dark theme + glassmorphism + neon glow + full animation
+   ============================================================ */
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+:root {
+  --neon-cyan: #22d3ee;
+  --neon-purple: #a78bfa;
+  --neon-pink: #f472b6;
+  --text-soft: #b9c0e8;
+  --text-dim: #6b7194;
+}
+
+html,
+body {
+  min-height: 100%;
 }
 
 body {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #07071a;
+  color: #e8e8f5;
   min-height: 100vh;
-  padding: 30px 15px;
+  padding: 40px 15px 80px;
+  overflow-x: hidden;
+  position: relative;
 }
 
+/* --- Animated background wash (dhire-dhire rang badalta hai) --- */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  background: linear-gradient(120deg, #0b0b24, #1b1040, #06121f, #1b1040, #0b0b24);
+  background-size: 400% 400%;
+  animation: bgShift 18s ease infinite;
+}
+
+@keyframes bgShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* --- Floating glowing orbs (background ke bulbule) --- */
+.orbs {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  pointer-events: none;
+  /* Mouse parallax — orbs cursor ke saath halka saath chalte hain */
+  transform: translate(calc(var(--mx, 0) * 24px), calc(var(--my, 0) * 24px));
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.5;
+  filter: blur(90px) saturate(1.4);
+  mix-blend-mode: screen;
+}
+
+.orb1 {
+  width: 420px; height: 420px;
+  background: #7c3aed;
+  top: -120px; left: -100px;
+  animation: float1 22s ease-in-out infinite;
+}
+
+.orb2 {
+  width: 360px; height: 360px;
+  background: #ec4899;
+  bottom: -100px; right: -80px;
+  animation: float2 26s ease-in-out infinite;
+}
+
+.orb3 {
+  width: 300px; height: 300px;
+  background: #2563eb;
+  top: 35%; left: 60%;
+  animation: float3 24s ease-in-out infinite;
+}
+
+.orb4 {
+  width: 260px; height: 260px;
+  background: #06b6d4;
+  top: 60%; left: -60px;
+  animation: float2 30s ease-in-out infinite reverse;
+}
+
+@keyframes float1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(80px, 60px) scale(1.15); }
+  66% { transform: translate(-40px, 120px) scale(0.9); }
+}
+
+@keyframes float2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-100px, -80px) scale(1.2); }
+}
+
+@keyframes float3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-120px, 60px) scale(1.1); }
+}
+
+/* --- Particle network canvas (stars + lines, mouse par react karta hai) --- */
+#bgParticles {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* --- Confetti canvas (placement hua to yahan girega) --- */
+#confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+}
+
+/* ================= Card (glassmorphism) ================= */
 .container {
-  max-width: 450px;
+  max-width: 470px;
   margin: 0 auto;
-  background: white;
-  border-radius: 15px;
-  padding: 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  position: relative;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03));
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 22px;
+  padding: 34px 30px;
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  animation: cardIn 0.9s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  transition: transform 0.12s ease-out;
+  will-change: transform;
 }
 
-/* Header */
+/* --- 3D tilt glare (card par cursor ki roshni) --- */
+.glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    600px circle at var(--gx, 50%) var(--gy, 50%),
+    rgba(255, 255, 255, 0.13),
+    transparent 45%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.container.tilting .glare {
+  opacity: 1;
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(40px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ================= Header ================= */
 header {
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 28px;
 }
 
 header h1 {
-  color: #333;
-  font-size: 26px;
-  margin-bottom: 8px;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink), var(--neon-cyan));
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradientMove 5s linear infinite, glowPulse 3s ease-in-out infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes gradientMove {
+  to { background-position: 300% center; }
+}
+
+@keyframes glowPulse {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(167, 139, 250, 0.5)); }
+  50% { filter: drop-shadow(0 0 18px rgba(244, 114, 182, 0.8)); }
 }
 
 header p {
-  color: #777;
+  color: #9ca3d0;
   font-size: 14px;
+  animation: fadeSlide 1s 0.3s both;
 }
 
-/* Form */
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* --- AI Powered badge --- */
+.badge {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #c4b5fd;
+  border: 1px solid rgba(167, 139, 250, 0.4);
+  background: rgba(167, 139, 250, 0.1);
+  padding: 5px 14px;
+  border-radius: 99px;
+  animation: badgeFloat 3s ease-in-out infinite;
+}
+
+@keyframes badgeFloat {
+  0%, 100% { transform: translateY(0); box-shadow: 0 0 8px rgba(167, 139, 250, 0.2); }
+  50% { transform: translateY(-4px); box-shadow: 0 0 18px rgba(167, 139, 250, 0.5); }
+}
+
+/* ================= Form ================= */
 label {
   display: block;
-  font-size: 13px;
-  color: #555;
-  font-weight: bold;
-  margin: 12px 0 5px;
+  font-size: 12.5px;
+  color: var(--text-soft);
+  font-weight: 600;
+  margin: 14px 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
 }
 
 input,
 select {
   width: 100%;
-  padding: 10px;
-  border: 2px solid #ddd;
-  border-radius: 8px;
+  padding: 12px 14px;
   font-size: 14px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+input::placeholder {
+  color: var(--text-dim);
 }
 
 input:focus,
 select:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: var(--neon-purple);
+  box-shadow:
+    0 0 0 3px rgba(167, 139, 250, 0.2),
+    0 0 15px rgba(167, 139, 250, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
 }
 
+select option {
+  background: #12122e;
+  color: #fff;
+}
+
+/* ================= Predict Button ================= */
 button {
+  position: relative;
+  overflow: hidden;
   width: 100%;
-  margin-top: 20px;
-  padding: 14px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
+  margin-top: 22px;
+  padding: 15px;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #fff;
   cursor: pointer;
+  background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899, #6366f1);
+  background-size: 300% auto;
+  animation: gradientMove 4s linear infinite;
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.45);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 button:hover {
-  opacity: 0.9;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 35px rgba(168, 85, 247, 0.65);
+}
+
+button:active {
+  transform: scale(0.98);
 }
 
 button:disabled {
-  opacity: 0.6;
+  opacity: 0.7;
   cursor: wait;
+  animation: none;
+  transform: none;
 }
 
-/* Result box */
+/* Button par shine sweep effect */
+button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: skewX(-20deg);
+  animation: shine 3.2s ease-in-out infinite;
+}
+
+@keyframes shine {
+  0% { left: -80%; }
+  50%, 100% { left: 130%; }
+}
+
+/* ================= Result Box ================= */
 #result {
-  margin-top: 20px;
-  padding: 20px;
-  border-radius: 10px;
+  margin-top: 22px;
+  padding: 22px;
+  border-radius: 14px;
   text-align: center;
-  color: white;
+  color: #fff;
+  animation: popIn 0.6s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.7); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 #result.placed {
-  background: linear-gradient(135deg, #11998e, #38ef7d);
+  background: linear-gradient(135deg, #0f766e, #10b981, #34d399);
+  box-shadow: 0 10px 35px rgba(16, 185, 129, 0.4);
 }
 
 #result.not-placed {
-  background: linear-gradient(135deg, #eb3349, #f45c43);
+  background: linear-gradient(135deg, #b91c1c, #ef4444, #f87171);
+  box-shadow: 0 10px 35px rgba(239, 68, 68, 0.4);
 }
 
 #result h2 {
   font-size: 22px;
-  margin-bottom: 8px;
-}
-
-#probText {
-  font-size: 30px;
-  font-weight: bold;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 #messageText {
-  font-size: 13px;
+  font-size: 13.5px;
   opacity: 0.95;
 }
 
-/* Error box */
+/* --- Circular neon gauge (chance ka %) --- */
+.gauge {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 14px auto 6px;
+}
+
+.gauge svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg); /* ring top se bhare */
+}
+
+.gauge-bg {
+  fill: none;
+  stroke: rgba(0, 0, 0, 0.28);
+  stroke-width: 10;
+}
+
+.gauge-fill {
+  fill: none;
+  stroke: url(#gaugeGrad);
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-dasharray: 326.73; /* 2π × 52 */
+  stroke-dashoffset: 326.73; /* 0% se shuru */
+  filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.8));
+  transition: stroke-dashoffset 1.4s cubic-bezier(0.25, 1, 0.3, 1);
+}
+
+#probText {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 800;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* ================= Error Box ================= */
 #error {
   margin-top: 15px;
   padding: 12px;
-  background: #fdecea;
-  color: #c0392b;
-  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  border-radius: 10px;
   font-size: 13px;
   text-align: center;
+  animation: popIn 0.4s both;
 }
 
-.hidden {
-  display: none;
-}
-
-/* Credit - corner me naam */
+/* ================= Credit — TAGDA version ================= */
 .credit {
   position: fixed;
-  bottom: 12px;
-  right: 15px;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.85);
-  background: rgba(0, 0, 0, 0.25);
-  padding: 5px 12px;
-  border-radius: 20px;
+  bottom: 14px;
+  right: 16px;
+  z-index: 50;
+  font-size: 13px;
+  color: #e8e8f5;
+  padding: 8px 18px;
+  border-radius: 99px;
+  background: rgba(10, 10, 30, 0.55);
+  border: 1px solid rgba(167, 139, 250, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   pointer-events: none;
+  overflow: hidden;
+  animation: creditGlow 2.6s ease-in-out infinite;
+}
+
+@keyframes creditGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(167, 139, 250, 0.35);
+    border-color: rgba(167, 139, 250, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(236, 72, 153, 0.7);
+    border-color: rgba(244, 114, 182, 0.9);
+  }
+}
+
+/* Naam me animated gradient + neon flicker (jaise neon sign board) */
+.credit b {
+  background: linear-gradient(90deg, #22d3ee, #a78bfa, #f472b6, #a78bfa, #22d3ee);
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 800;
+  text-shadow: 0 0 10px rgba(34, 211, 238, 0.55), 0 0 22px rgba(167, 139, 250, 0.45);
+  animation: gradientMove 3s linear infinite, neonFlicker 7s linear infinite;
+}
+
+@keyframes neonFlicker {
+  0%, 6.9%, 7.1%, 10.9%, 11.1%, 54.9%, 55.1%, 100% { opacity: 1; }
+  7% { opacity: 0.35; }
+  11% { opacity: 0.7; }
+  55% { opacity: 0.25; }
+}
+
+/* Sparkle jo ankhein mar-marat wali chamak dikhata hai */
+.sparkle {
+  display: inline-block;
+  margin-left: 5px;
+  font-style: normal;
+  color: #fbbf24;
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.8);
+  animation: twinkle 1.8s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.75) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.25) rotate(20deg); }
+}
+
+/* Pill par shine sweep */
+.credit::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+  transform: skewX(-20deg);
+  animation: shine 3.5s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+/* ================= Title letters (ek-ek karke uchhalte hain) ================= */
+.letter {
+  display: inline-block;
+  animation:
+    letterIn 0.7s cubic-bezier(0.2, 1.4, 0.4, 1) both,
+    letterWave 3.2s ease-in-out infinite;
+}
+
+@keyframes letterIn {
+  from { opacity: 0; transform: translateY(26px) rotate(8deg) scale(0.7); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes letterWave {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* ================= Typewriter caret ================= */
+.caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 3px;
+  vertical-align: -2px;
+  background: var(--neon-cyan);
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.9);
+  animation: caretBlink 0.8s steps(1) infinite;
+}
+
+@keyframes caretBlink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* ================= Button ripple (click par lehar) ================= */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  transform: scale(0);
+  animation: rippleGo 0.65s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes rippleGo {
+  to { transform: scale(2.4); opacity: 0; }
+}
+
+/* ================= Login Page ================= */
+.login-card {
+  margin-top: 6vh;
+}
+
+#loginForm button {
+  margin-top: 24px;
+}
+
+.logout-btn {
+  position: fixed;
+  top: 14px;
+  right: 16px;
+  z-index: 60;
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 99px;
+  border: 1px solid rgba(239, 68, 68, 0.55);
+  background: rgba(239, 68, 68, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.25s ease;
+}
+
+.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.35);
+  box-shadow: 0 0 18px rgba(239, 68, 68, 0.6);
+  transform: translateY(-2px);
+}
+
+/* ================= Custom neon cursor ================= */
+#cursorDot,
+#cursorRing {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+body.custom-cursor #cursorDot,
+body.custom-cursor #cursorRing {
+  opacity: 1;
+}
+
+#cursorDot {
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  background: var(--neon-cyan);
+  box-shadow: 0 0 10px var(--neon-cyan), 0 0 22px rgba(34, 211, 238, 0.7);
+}
+
+#cursorRing {
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border: 1.5px solid rgba(167, 139, 250, 0.85);
+  box-shadow: 0 0 12px rgba(167, 139, 250, 0.4);
+  transition: width 0.25s ease, height 0.25s ease, margin 0.25s ease,
+    border-color 0.25s ease, opacity 0.3s ease;
+}
+
+body.custom-cursor #cursorRing.hovering {
+  width: 56px;
+  height: 56px;
+  margin: -28px 0 0 -28px;
+  border-color: var(--neon-pink);
+  box-shadow: 0 0 16px rgba(244, 114, 182, 0.6);
+}
+
+body.custom-cursor,
+body.custom-cursor a,
+body.custom-cursor button,
+body.custom-cursor input,
+body.custom-cursor select,
+body.custom-cursor label {
+  cursor: none;
+}
+
+/* ================= AI scan line ================= */
+.scanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 110px;
+  z-index: 5;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(34, 211, 238, 0.12) 55%,
+    rgba(34, 211, 238, 0.45) 90%,
+    rgba(255, 255, 255, 0.95) 100%
+  );
+  border-bottom: 2px solid rgba(34, 211, 238, 0.9);
+  box-shadow: 0 6px 28px rgba(34, 211, 238, 0.55);
+  overflow: hidden;
+}
+
+.container.scanning .scanline {
+  animation: scanSweep 1.6s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+}
+
+@keyframes scanSweep {
+  0% { top: -110px; opacity: 0; }
+  8% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.container.scanning {
+  border-color: rgba(34, 211, 238, 0.65);
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.5),
+    0 0 32px rgba(34, 211, 238, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Scanned field — scan line jab field se guzarti hai to wo chamakta hai */
+input.scanned,
+select.scanned {
+  border-color: var(--neon-cyan) !important;
+  background: rgba(34, 211, 238, 0.14) !important;
+  box-shadow:
+    0 0 0 3px rgba(34, 211, 238, 0.25),
+    0 0 18px rgba(34, 211, 238, 0.5) !important;
+}
+
+/* ================= Profile power bar ================= */
+.charge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.charge-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #c4b5fd;
+  white-space: nowrap;
+}
+
+.charge-track {
+  flex: 1;
+  height: 8px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+}
+
+.charge-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink));
+  background-size: 200% auto;
+  animation: gradientMove 3s linear infinite;
+  box-shadow: 0 0 12px rgba(167, 139, 250, 0.7);
+  transition: width 0.5s cubic-bezier(0.25, 1, 0.3, 1);
+}
+
+.charge-pct {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--neon-cyan);
+  min-width: 34px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+}
+
+.charge.full .charge-track {
+  animation: chargeFlash 0.6s ease 2;
+}
+
+@keyframes chargeFlash {
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: 0 0 18px rgba(52, 211, 153, 0.9); border-color: #34d399; }
+}
+
+/* Label ke saath green tick jab field bhar jaye */
+label {
+  position: relative;
+}
+
+label::after {
+  content: "✓";
+  position: absolute;
+  right: 2px;
+  top: 0;
+  color: #34d399;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: all 0.3s cubic-bezier(0.2, 1.4, 0.4, 1);
+  text-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
+}
+
+label.filled::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ================= Thinking equalizer (button ke andar) ================= */
+.eq {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 16px;
+  margin-right: 8px;
+  vertical-align: -3px;
+}
+
+.eq i {
+  display: block;
+  width: 3px;
+  height: 100%;
+  border-radius: 2px;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+  transform-origin: bottom;
+  animation: eqBounce 0.85s ease-in-out infinite;
+}
+
+.eq i:nth-child(2) { animation-delay: 0.12s; }
+.eq i:nth-child(3) { animation-delay: 0.24s; }
+.eq i:nth-child(4) { animation-delay: 0.36s; }
+.eq i:nth-child(5) { animation-delay: 0.48s; }
+
+@keyframes eqBounce {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}
+
+/* Sab fields bhar gaye to button aur zyada jagmagaye */
+button.charged {
+  box-shadow:
+    0 8px 25px rgba(139, 92, 246, 0.45),
+    0 0 24px rgba(34, 211, 238, 0.55);
+  animation: gradientMove 4s linear infinite, chargedPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes chargedPulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.3); }
+}
+
+/* ================= Hologram glitch reveal (result ke liye) ================= */
+#result.glitch-in {
+  animation: glitchIn 0.75s cubic-bezier(0.2, 1.2, 0.4, 1) both;
+}
+
+@keyframes glitchIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.7) translateX(-10px);
+    filter: hue-rotate(90deg) saturate(2.5);
+    clip-path: inset(25% 0 45% 0);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.05) translateX(7px);
+    clip-path: inset(60% 0 8% 0);
+  }
+  40% {
+    transform: scale(0.97) translateX(-5px);
+    filter: hue-rotate(-70deg) saturate(2);
+    clip-path: inset(8% 0 72% 0);
+  }
+  60% {
+    transform: scale(1.02) translateX(4px);
+    clip-path: inset(0 0 0 0);
+  }
+  80% {
+    transform: scale(0.99) translateX(-2px);
+    filter: none;
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* ================= Misc ================= */
+.hidden {
+  display: none !important;
+}
+
+/* Mobile me thoda compact */
+@media (max-width: 480px) {
+  .container { padding: 26px 20px; }
+  header h1 { font-size: 24px; }
+}
+
+/* Jo log kam motion chahte hain unke liye */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

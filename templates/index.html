@@ -8,13 +8,38 @@
 </head>
 <body>
 
+  <!-- Tagda animated background: particle network + shooting stars + glowing orbs -->
+  <canvas id="bgParticles"></canvas>
+  <div class="orbs" aria-hidden="true">
+    <span class="orb orb1"></span>
+    <span class="orb orb2"></span>
+    <span class="orb orb3"></span>
+    <span class="orb orb4"></span>
+  </div>
+
+  <!-- Custom neon cursor (sirf desktop par) -->
+  <span id="cursorDot" aria-hidden="true"></span>
+  <span id="cursorRing" aria-hidden="true"></span>
+
   <div class="container">
+    <div class="glare" aria-hidden="true"></div>
+
+    <!-- AI scan line (predict karte waqt card par sweep karti hai) -->
+    <div class="scanline" aria-hidden="true"></div>
 
     <!-- Header -->
     <header>
-      <h1>🎯 Placement Predictor</h1>
-      <p>Apni details bharo aur jano ki placement hogi ya nahi!</p>
+      <h1 id="mainTitle">🎯 Placement Predictor</h1>
+      <p id="tagline">Apni details bharo aur jano ki placement hogi ya nahi!</p>
+      <div class="badge">⚡ AI Powered</div>
     </header>
+
+    <!-- Profile power bar — jitni details utni energy -->
+    <div class="charge" aria-hidden="true">
+      <span class="charge-label">⚡ Power</span>
+      <div class="charge-track"><div class="charge-fill" id="chargeFill"></div></div>
+      <span class="charge-pct" id="chargePct">0%</span>
+    </div>
 
     <!-- Form -->
     <form id="predictForm">
@@ -52,7 +77,23 @@
     <!-- Result yahan dikhega -->
     <div id="result" class="hidden">
       <h2 id="predictionText"></h2>
-      <div id="probText"></div>
+
+      <!-- Circular neon gauge -->
+      <div class="gauge">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <defs>
+            <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#22d3ee" />
+              <stop offset="50%" stop-color="#a78bfa" />
+              <stop offset="100%" stop-color="#f472b6" />
+            </linearGradient>
+          </defs>
+          <circle class="gauge-bg" cx="60" cy="60" r="52" />
+          <circle class="gauge-fill" id="gaugeFill" cx="60" cy="60" r="52" />
+        </svg>
+        <div id="probText"></div>
+      </div>
+
       <p id="messageText"></p>
     </div>
 
@@ -61,8 +102,16 @@
 
   </div>
 
-  <!-- Credit (corner me chhota sa) -->
-  <footer class="credit">Created by Vikas Yadav</footer>
+  <!-- Placement hua to confetti yahan girega -->
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+  <!-- Logout button -->
+  <a href="{{ url_for('logout') }}" class="logout-btn">Logout 🚪</a>
+
+  <!-- Credit (corner me neon sign) -->
+  <footer class="credit">
+    <span>Created by <b>Vikas Yadav</b><i class="sparkle">✦</i></span>
+  </footer>
 
   <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>

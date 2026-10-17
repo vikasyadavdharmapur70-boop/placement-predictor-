@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Placement Predictor</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #0b1220;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .page {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-box {
+      position: relative;
+      width: 350px;
+      padding: 30px;
+      margin-top: 100px;
+      border-radius: 16px;
+      background: #131f33;
+      box-shadow: 0 15px 50px #0008;
+      text-align: center;
+    }
+
+    /* Lamp wire */
+    .wire {
+      position: absolute;
+      width: 3px;
+      height: 90px;
+      background: #657187;
+      bottom: 100%;
+      left: 50%;
+    }
+
+    /* Lamp shade */
+    .lamp {
+      position: absolute;
+      width: 110px;
+      height: 55px;
+      background: #202b40;
+      border-radius: 60px 60px 12px 12px;
+      bottom: calc(100% + 35px);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      box-shadow: 0 5px 15px #0008;
+    }
+
+    .bulb {
+      position: absolute;
+      bottom: -8px;
+      left: 45px;
+      width: 20px;
+      height: 15px;
+      background: #ffe88a;
+      border-radius: 50%;
+      box-shadow: 0 0 25px 12px #ffcf4a;
+      animation: glow 2s infinite alternate;
+    }
+
+    /* Light falling on the form */
+    .light {
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      bottom: calc(100% - 100px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: radial-gradient(
+        ellipse,
+        #ffd75b35,
+        #ffd75b08 55%,
+        transparent 72%
+      );
+      pointer-events: none;
+    }
+
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 15px 6px #ffcf4a;
+      }
+      to {
+        box-shadow: 0 0 35px 18px #ffcf4a;
+      }
+    }
+
+    h2 {
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+
+    p {
+      color: #aab8ce;
+      margin-bottom: 25px;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      margin: 8px 0;
+      border: 1px solid #34445d;
+      border-radius: 7px;
+      background: #1b2a41;
+      color: white;
+      outline: none;
+      font-size: 15px;
+    }
+
+    input:focus {
+      border-color: #438cff;
+      box-shadow: 0 0 8px #438cff50;
+    }
+
+    .password-wrap {
+      position: relative;
+    }
+
+    .password-wrap input {
+      padding-right: 45px;
+    }
+
+    #toggle {
+      position: absolute;
+      right: 12px;
+      top: 20px;
+      cursor: pointer;
+      color: #b9c9e3;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 15px;
+      padding: 13px;
+      border: none;
+      border-radius: 7px;
+      background: #347ff5;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #1e65d8;
+      transform: translateY(-2px);
+    }
+
+    button:disabled {
+      opacity: 0.7;
+      cursor: wait;
+      transform: none;
+    }
+
+    #message {
+      margin-top: 15px;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 400px) {
+      .login-box {
+        width: 100%;
+        padding: 25px 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <div class="login-box">
+
+      <div class="wire"></div>
+      <div class="lamp">
+        <div class="bulb"></div>
+      </div>
+      <div class="light"></div>
+
+      <h2>Welcome Back!</h2>
+      <p>Placement Predictor me login karo</p>
+
+      <form id="loginForm" method="POST" action="{{ url_for('login') }}">
+        <input
+          type="text"
+          name="username"
+          id="username"
+          placeholder="Enter Username"
+          autocomplete="username"
+          required
+          autofocus
+        >
+
+        <div class="password-wrap">
+          <input
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Enter Password"
+            autocomplete="current-password"
+            required
+          >
+          <span id="toggle" role="button"
+                tabindex="0" aria-label="Show password">👁</span>
+        </div>
+
+        <button type="submit" id="loginBtn">Login</button>
+        <div id="message" aria-live="polite">{% if error %}{{ error }}{% endif %}</div>
+      </form>
+
+    </div>
+  </div>
+
+  <script>
+    const password = document.getElementById("password");
+    const toggle = document.getElementById("toggle");
+    const form = document.getElementById("loginForm");
+    const message = document.getElementById("message");
+    const loginBtn = document.getElementById("loginBtn");
+
+    // Server se error aaya ho to laal rang me dikhao
+    if (message.textContent.trim()) {
+      message.style.color = "#ff7b7b";
+    }
+
+    function togglePassword() {
+      const hidden = password.type === "password";
+      password.type = hidden ? "text" : "password";
+      toggle.textContent = hidden ? "🙈" : "👁";
+      toggle.setAttribute(
+        "aria-label",
+        hidden ? "Hide password" : "Show password"
+      );
+    }
+
+    toggle.addEventListener("click", togglePassword);
+
+    toggle.addEventListener("keydown", function(event) {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        togglePassword();
+      }
+    });
+
+    form.addEventListener("submit", function() {
+      message.style.color = "#ffd75b";
+      message.textContent = "Checking... 🔍";
+      loginBtn.disabled = true;
+      loginBtn.textContent = "Login ho raha hai...";
+    });
+  </script>
+</body>
+</html>
